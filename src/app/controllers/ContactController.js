@@ -19,7 +19,7 @@ class ContactController {
 
   // Deletar um registro
   delete() {
-
+    console.log('delete');
   }
 }
 // Singleton: Apenas uma instancia da classe.
