@@ -1,9 +1,10 @@
 const ContactsRepository = require('../repositories/ContactsRepository');
 
 class ContactController {
-  // Mostrar a lista de contatos
-  index(request, response) {
-    const contacts = ContactsRepository.findAll();
+  // Mostrar a lista de contatos. Utilizar async para callback assincrono.
+  async index(request, response) {
+    // Sei que é bloqueante, porém execute a função e espere o retorno.
+    const contacts = await ContactsRepository.findAll();
     response.json(contacts);
   }
 

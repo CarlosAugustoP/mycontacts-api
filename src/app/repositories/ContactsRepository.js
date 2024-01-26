@@ -14,7 +14,9 @@ const contacts = [
 
 class ContactsRepository {
   findAll() {
-    return contacts;
+    return new Promise((resolve) => {
+      resolve(contacts);
+    });
   }
 }
 // Using singleton pattern
