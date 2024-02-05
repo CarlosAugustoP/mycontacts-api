@@ -22,10 +22,16 @@ let contacts = [
 ];
 
 class ContactsRepository {
-  async findAll() {
-    // Parametrized queries avoid SQL injections ny separating sql code from user input
+  async findAll(orderBy = 'ASC') {
     // SELECT operator is used to return all rows from a table
-    const rows = await db.query('SELECT * FROM contacts');
+    // ORDER BY is used to sort the result set in ascending or descending order
+    let direction;
+    if (orderBy.toUpperCase() === 'DESC') {
+      direction = 'DESC';
+    } else {
+      direction = 'ASC';
+    }
+    const rows = await db.query(`SELECT * FROM contacts ORDER BY name ${direction}`);
     return rows;
   }
 
@@ -39,14 +45,6 @@ class ContactsRepository {
     // Parametrized queries avoid SQL injections ny separating sql code from user input
     const [row] = await db.query('SELECT * FROM contacts WHERE email = $1', [email]);
     return row;
-  }
-
-  delete(id) {
-    return new Promise((resolve) => {
-      // manter somente os contatos com uuid id diferente do id selecionado
-      contacts = contacts.filter((contact) => contact.id !== id);
-      resolve();
-    });
   }
 
   // async sempre retorna uma promise
@@ -64,6 +62,21 @@ class ContactsRepository {
       [name, email, phone, category_id],
     );
     return row;
+  }
+
+  async update(id, {
+    name, email, phone, category_id,
+  }) {
+    const row = await db.query('UPDATE contacts SET name = $1, email = $2, phone = $3, category_id = $4 WHERE id = $5 RETURNING *', [name, email, phone, category_id, id]);
+    return row;
+  }
+
+  delete(id) {
+    return new Promise((resolve) => {
+      // manter somente os contatos com uuid id diferente do id selecionado
+      contacts = contacts.filter((contact) => contact.id !== id);
+      resolve();
+    });
   }
 }
 // Using singleton pattern
