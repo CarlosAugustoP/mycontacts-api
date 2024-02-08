@@ -1,25 +1,4 @@
-const { v4 } = require('uuid');
-
 const db = require('../../database');
-
-let contacts = [
-  {
-    // Considered safer due to unpredictable nature of uuid
-    id: v4(),
-    name: 'Mateus',
-    email: 'mateus@mail.com',
-    phone: '123456789',
-    category_id: v4(),
-  },
-  {
-    id: v4(),
-    name: 'Jose',
-    email: 'jose@mail.com',
-    phone: '123456789',
-    category_id: v4(),
-  },
-
-];
 
 class ContactsRepository {
   async findAll(orderBy = 'ASC') {
@@ -31,13 +10,18 @@ class ContactsRepository {
     } else {
       direction = 'ASC';
     }
-    const rows = await db.query(`SELECT * FROM contacts ORDER BY name ${direction}`);
+    const rows = await db.query(`
+    SELECT contacts.*, categories.name AS category_name
+    FROM contacts
+    LEFT JOIN categories ON categories.id = contacts.category_id
+    ORDER BY contacts.name ${direction}
+    `);
     return rows;
   }
 
   async findById(id) {
     // Parametrized queries avoid SQL injections ny separating sql code from user input
-    const [row] = await db.query('SELECT * FROM contacts WHERE id = $1', [id]);
+    const [row] = await db.query('SELECT contacts.*, categories.name AS category_name FROM contacts LEFT JOIN categories ON categories.id = contacts.category_id WHERE contacts.id = $1', [id]);
     return row;
   }
 
@@ -71,12 +55,9 @@ class ContactsRepository {
     return row;
   }
 
-  delete(id) {
-    return new Promise((resolve) => {
-      // manter somente os contatos com uuid id diferente do id selecionado
-      contacts = contacts.filter((contact) => contact.id !== id);
-      resolve();
-    });
+  async delete(id) {
+    const deleteOp = await db.query('DELETE FROM contacts WHERE id = $1', [id]);
+    return deleteOp;
   }
 }
 // Using singleton pattern
