@@ -8,5 +8,11 @@ const app = express();
 Nota-se que o express executa todas as rotas sequencialmente, então se ligue na ordem */
 app.use(express.json());
 app.use(routes);
+app.use((error, request, response, next) => {
+  console.log(error);
+  response.status(500);
+});
 
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});

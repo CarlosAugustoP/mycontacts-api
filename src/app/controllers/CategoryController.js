@@ -6,6 +6,8 @@ class CategoryController {
     response.json(categories);
   }
 
+  // Error handler -> manipulador de erros -> middleware
+
   async store(request, response) {
     const { name } = request.body;
     if (!name) {
