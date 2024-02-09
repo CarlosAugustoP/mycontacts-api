@@ -11,6 +11,7 @@ app.use(routes);
 app.use((error, request, response, next) => {
   console.log(error);
   response.status(500);
+  next();
 });
 
 app.listen(3000, () => {
